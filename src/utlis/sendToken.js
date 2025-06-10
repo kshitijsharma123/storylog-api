@@ -1,7 +1,8 @@
-import { generateToken } from './jwt.js';
+import { generateToken } from './jwtToken.js';
 
-export const sendTokenResponse = (user, res, message = 'Success') => {
-  const token = generateToken(user);
+export const sendToken = (user, res, message = 'Success') => {
+console.log("j")
+    const token = generateToken(user);
 
   res.cookie('token', token, {
     httpOnly: true,
