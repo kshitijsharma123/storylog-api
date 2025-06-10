@@ -56,3 +56,71 @@ export const userRegister = async (req, res) => {
     res.status(500).json({ message: "Server error", error: err.message });
   }
 };
+
+import User from '../models/User.js';
+import bcrypt from 'bcryptjs';
+import jwt from 'jsonwebtoken';
+
+export const userLogin = async (req, res) => {
+  try {
+    const { email, password } = req.body;
+
+    
+    if (!email || !password || email.trim() === '' || password.trim() === '') {
+      return res.status(400).json({
+        message: 'Please enter both email and password.'
+      });
+    }
+
+    
+    const user = await User.findOne({ email: email.trim().toLowerCase() });
+
+    if (!user) {
+      return res.status(401).json({
+        message: 'Hmm... that email is not registered.'
+      });
+    }
+
+    
+    const isPasswordValid = await bcrypt.compare(password, user.password);
+    if (!isPasswordValid) {
+      return res.status(401).json({
+        message: 'Oops! The password you entered is incorrect.'
+      });
+    }
+
+    
+    const token = jwt.sign(
+      { id: user._id, email: user.email },
+      process.env.JWT_SECRET,
+      {
+        expiresIn: process.env.JWT_EXPIRES_IN || '7d'
+      }
+    );
+
+    
+    res.cookie('token', token, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'Strict',
+      maxAge: 7 * 24 * 60 * 60 * 1000 
+    });
+
+    
+    res.status(200).json({
+      message: `Welcome back, ${user.name}! 🎉`,
+      user: {
+        id: user._id,
+        name: user.name,
+        email: user.email
+      }
+    });
+
+  } catch (error) {
+    console.error('Login error:', error.message);
+    res.status(500).json({
+      message: 'Something went wrong. Please try again later.',
+      error: error.message
+    });
+  }
+};
