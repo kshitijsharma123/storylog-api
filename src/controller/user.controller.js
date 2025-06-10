@@ -32,19 +32,7 @@ export const userRegister = async (req, res) => {
       email,
       password: hashedPassword,
     });
-    // const token = jwt.sign(
-    //   { id: user._id, email: user.email },
-    //   process.env.JWT_SECRET,
-    //   { expiresIn: process.env.JWT_EXPIRES_IN || "4d" }
-    // );
-
-    // // Set cookie
-    // res.cookie("token", token, {
-    //   httpOnly: true,
-    //   secure: process.env.NODE_ENV === "production",
-    //   sameSite: "Strict",
-    //   maxAge: 7 * 24 * 60 * 60 * 1000,
-    // });
+   
     sendToken(user, res);
 
     res.status(201).json({
@@ -86,20 +74,7 @@ export const userLogin = async (req, res) => {
       });
     }
 
-    const token = jwt.sign(
-      { id: user._id, email: user.email },
-      process.env.JWT_SECRET,
-      {
-        expiresIn: process.env.JWT_EXPIRES_IN || "7d",
-      }
-    );
-
-    res.cookie("token", token, {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === "production",
-      sameSite: "Strict",
-      maxAge: 7 * 24 * 60 * 60 * 1000,
-    });
+   sendToken(user, res, `Welcome back, ${user.name}!`);
 
     res.status(200).json({
       message: `Welcome back, ${user.name}! 🎉`,
