@@ -1,4 +1,5 @@
 import express from "express";
+import cookieParser from "cookie-parser";
 import userRoute from "./route/user.route.js";
 const app = express();
 
@@ -16,6 +17,16 @@ app.use((req, res, next) => {
 
   next();
 });
-app.use("api/auth/", userRoute);
+app.use(cookieParser())
+app.use(express.json({ limit: "16kb" }));
+app.use(
+  express.urlencoded({
+    extended: true,
+  })
+);
+
+
+
+app.use("/api/auth", userRoute);
 
 export { app };
