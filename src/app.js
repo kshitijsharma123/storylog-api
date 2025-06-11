@@ -1,6 +1,7 @@
 import express from "express";
 import cookieParser from "cookie-parser";
 import userRoute from "./route/user.route.js";
+import entryRoute from "./route/entry.route.js";
 const app = express();
 
 //For checking req
@@ -17,7 +18,7 @@ app.use((req, res, next) => {
 
   next();
 });
-app.use(cookieParser())
+app.use(cookieParser());
 app.use(express.json({ limit: "16kb" }));
 app.use(
   express.urlencoded({
@@ -25,8 +26,7 @@ app.use(
   })
 );
 
-
-
 app.use("/api/auth", userRoute);
+app.use("/api/entries", entryRoute);
 
 export { app };

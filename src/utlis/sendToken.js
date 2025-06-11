@@ -1,7 +1,7 @@
 import { generateToken } from './jwtToken.js';
 
 export const sendToken = (user, res, message = 'Success') => {
-console.log("j")
+
     const token = generateToken(user);
 
   res.cookie('token', token, {
