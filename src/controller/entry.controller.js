@@ -33,7 +33,7 @@ export const createEntry = async (req, res) => {
 
 export const getAllEntry = async (req, res) => {
   try {
-    const { moodTag, fromDate, toDate } = req?.query;
+    const { moodTag, fromDate, toDate, keyword } = req?.query;
 
     const filter = { createdBy: req.user._id };
 
@@ -47,6 +47,10 @@ export const getAllEntry = async (req, res) => {
       if (toDate) filter.date.$lte = new Date(toDate);
     }
 
+    if (keyword && keyword.trim() !== "") {
+      const regex = new RegExp(keyword.trim(), "i"); // i = case-insensitive
+      filter.$or = [{ title: { $regex: regex } }, { body: { $regex: regex } }];
+    }
     const entries = await Entry.find(filter).sort({ date: -1 });
 
     res.status(200).json({ count: entries.length, entries });
@@ -56,20 +60,17 @@ export const getAllEntry = async (req, res) => {
   }
 };
 
-export const getEntry = async(req, res) => {
-
-
-   try {
+export const getEntry = async (req, res) => {
+  try {
     const { id } = req.params;
 
-    
     if (!id || id.length !== 24) {
       return res.status(400).json({ message: "Invalid entry ID format." });
     }
 
     const entry = await Entry.findOne({
       _id: id,
-      createdBy: req.user._id, 
+      createdBy: req.user._id,
     });
 
     if (!entry) {
