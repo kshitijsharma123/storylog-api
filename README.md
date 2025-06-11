@@ -87,7 +87,7 @@ Server will be running at `http://localhost:3000`
 - 📝 Story creation and management
 - 🗂️ User profiles
 - 📊 Analytics and insights
-- 🌐 Deployment guide (e.g., Render, Railway, Vercel)
+
 
 ---
 
