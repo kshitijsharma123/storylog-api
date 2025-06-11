@@ -1,3 +1,4 @@
+
 import User from "../model/User.model.js";
 import bcrypt from "bcryptjs";
 import { sendToken } from "./../utlis/sendToken.js";
@@ -85,6 +86,25 @@ export const userLogin = async (req, res) => {
     console.error("Login error:", error.message);
     res.status(500).json({
       message: "Something went wrong. Please try again later.",
+      error: error.message,
+    });
+  }
+};
+
+
+export const userLogout = (req, res) => {
+  try {
+    res.clearCookie("token", {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "Strict",
+    });
+
+    res.status(200).json({ message: "Logged out successfully." });
+  } catch (error) {
+    console.error("Logout error:", error.message);
+    res.status(500).json({
+      message: "Error during logout.",
       error: error.message,
     });
   }

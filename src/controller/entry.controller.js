@@ -151,3 +151,54 @@ export const deleteEntry = async (req, res) => {
       .json({ message: "Failed to delete entry.", error: error.message });
   }
 };
+
+
+export const getSummary = async (req, res) => {
+  try {
+    const userId = req.user._id;
+
+    const summary = await Entry.aggregate([
+      { $match: { createdBy: userId } },
+      {
+        $group: {
+          _id: null,
+          totalEntries: { $sum: 1 },
+          totalWords: { $sum: "$wordCount" },
+          avgMood: { $avg: "$moodScore" },
+          moodDistribution: {
+            $push: "$moodScore",
+          },
+        },
+      },
+    ]);
+
+    const moodTagBreakdown = await Entry.aggregate([
+      { $match: { createdBy: userId } },
+      { $unwind: "$moodTags" },
+      {
+        $group: {
+          _id: "$moodTags",
+          count: { $sum: 1 },
+        },
+      },
+      { $sort: { count: -1 } },
+    ]);
+
+    console.log(moodTagBreakdown)
+    res.status(200).json({
+      summary: summary[0] || {
+        totalEntries: 0,
+        totalWords: 0,
+        avgMood: null,
+        moodDistribution: [],
+      },
+      moodTagBreakdown,
+    });
+  } catch (error) {
+    console.error("Summary Error:", error.message);
+    res.status(500).json({
+      message: "Failed to retrieve summary.",
+      error: error.message,
+    });
+  }
+};
