@@ -18,7 +18,7 @@ export const authMiddleware = async (req, res, next) => {
     const user = await User.findOne({ email: decoded.email }).select(
       "-password"
     );
-    console.log(user)
+    
 
     if (!user) {
       return res.status(401).json({ message: "User not found" });
