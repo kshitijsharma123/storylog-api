@@ -2,6 +2,7 @@ import express from "express";
 import cookieParser from "cookie-parser";
 import userRoute from "./route/user.route.js";
 import entryRoute from "./route/entry.route.js";
+import logWrites from "./middleware/logWrite.middleware.js";
 const app = express();
 
 //For checking req
@@ -18,6 +19,8 @@ app.use((req, res, next) => {
 
   next();
 });
+
+app.use(logWrites)
 app.use(cookieParser());
 app.use(express.json({ limit: "16kb" }));
 app.use(
