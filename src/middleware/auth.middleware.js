@@ -1,22 +1,27 @@
 import jwt from "jsonwebtoken";
+import User from "../models/User.js";
 
-export const verifyJWT = asyncHandler(async (req, res, next) => {
+export const authMiddleware = async (req, res, next) => {
   try {
     const token =
-      req.cookies?.AccessToken ||
-      req.header("Authorization")?.replace("Bearer ", "");
+      req.cookies?.token || req.header("Authorization")?.replace("Bearer ", "");
 
-    if (!token)
-      return res.status(401).json(new ApiResponse(401, "No Cookie Present"));
+    if (!token) {
+      return res
+        .status(401)
+        .json({ message: "No token, authorization denied" });
+    }
 
-    // const { _id } = jwt.verify(token, process.env.ACCESS_TOKEN_SECRET);
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
 
-   
+    req.user = await User.findById(decoded.id).select("-password");
+    if (!req.user) {
+      return res.status(401).json({ message: "User not found" });
+    }
 
-    // sending user in request Object
-    req.user = user;
     next();
   } catch (error) {
-  
+    console.error("Auth error:", error.message);
+    res.status(401).json({ message: "Invalid token, authorization denied" });
   }
-});
+};

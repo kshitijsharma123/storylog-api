@@ -32,7 +32,7 @@ export const userRegister = async (req, res) => {
       email,
       password: hashedPassword,
     });
-   
+
     sendToken(user, res);
 
     res.status(201).json({
@@ -47,7 +47,6 @@ export const userRegister = async (req, res) => {
     res.status(500).json({ message: "Server error", error: err.message });
   }
 };
-
 
 export const userLogin = async (req, res) => {
   try {
@@ -74,8 +73,6 @@ export const userLogin = async (req, res) => {
       });
     }
 
-   sendToken(user, res, `Welcome back, ${user.name}!`);
-
     res.status(200).json({
       message: `Welcome back, ${user.name}! 🎉`,
       user: {
@@ -84,6 +81,7 @@ export const userLogin = async (req, res) => {
         email: user.email,
       },
     });
+    return sendToken(user, res, `Welcome back, ${user.name}!`);
   } catch (error) {
     console.error("Login error:", error.message);
     res.status(500).json({
