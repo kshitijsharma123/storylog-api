@@ -6,17 +6,18 @@ import {
   getEntry,
   updateEntry,
   deleteEntry,
-  getSummary
+  getSummary,
 } from "../controller/entry.controller.js";
+import { validateEntry } from "../middleware/validateEntry.middleware.js";
 
 const router = Router();
 
 router.use(authMiddleware);
 
-router.route("/create").post(createEntry);
+router.route("/create").post(validateEntry, createEntry);
 router.route("/all").get(getAllEntry);
 router.route("/:id").get(getEntry);
-router.route("/edit/:id").put(updateEntry);
+router.route("/edit/:id").put(validateEntry, updateEntry);
 router.route("/delete/:id").delete(deleteEntry);
 router.route("/summary").get(getSummary);
 
