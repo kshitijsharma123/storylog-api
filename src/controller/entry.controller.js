@@ -86,3 +86,45 @@ export const getEntry = async (req, res) => {
     });
   }
 };
+
+export const updateEntry = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { title, body, moodTags, moodScore } = req.body;
+
+    const entry = await Entry.findOne({ _id: id, createdBy: req.user._id });
+
+    if (!entry) {
+      return res.status(404).json({ message: "Entry not found." });
+    }
+
+    
+    entry.archive.push({
+      title: entry.title,
+      body: entry.body,
+      moodTags: entry.moodTags,
+      moodScore: entry.moodScore,
+      wordCount: entry.wordCount,
+      updatedAt: new Date(),
+    });
+
+    
+    if (title) entry.title = title.trim();
+    if (body) entry.body = body;
+    if (Array.isArray(moodTags)) entry.moodTags = moodTags;
+    if (typeof moodScore === "number") entry.moodScore = moodScore;
+
+    
+    entry.wordCount = entry.body.trim().split(/\s+/).length;
+
+    await entry.save();
+
+    res.status(200).json({
+      message: "Entry updated successfully.",
+      entry,
+    });
+  } catch (error) {
+    console.error("Update Entry Error:", error.message);
+    res.status(500).json({ message: "Error updating entry.", error: error.message });
+  }
+};
