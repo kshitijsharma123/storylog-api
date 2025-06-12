@@ -70,7 +70,7 @@ Server will be running at `http://localhost:3000`
 | POST   | `/api/auth/login`      | Login and receive JWT  |
 | POST   | `/api/auth/logout`     | Logout the user        |
 
-> For detailed testing, import the [Postman Collection](#) _(link your collection here)_.
+> For detailed testing, import the [Postman Collection](#) 
 
 ---
 
